@@ -1,240 +1,84 @@
+<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>张陈宏蠢</title>
-    <link rel="shortcut icon" href="http://zhouql.vip/images/心.png" type="image/x-icon">
-    <style>
-        html,
-        body {
-            height: 100%;
-            padding: 0;
-            margin: 0;
-            background: #000;
-        }
-        canvas {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-        p{
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-            color: pink;
-            animation: k 1.5s ease-in-out infinite;
-        }
-        @keyframes k{
-            100%{
-                font-size: 24px;
-                opacity: 0;
-            }
-        }
-    </style>
+<title>guitou的博客 | 如何和女生聊天</title>
+<link rel="stylesheet" href="guitou.css">
 </head>
 <body>
-    <p>张陈宏蠢</p>
-    <canvas id="pinkboard"></canvas>
-    <script>
-        var settings = {
-            particles: {
-                length: 600,  // 爱心的大小
-                duration: 2,  // 爱心扩散速度，越小速度越快
-                velocity: 100,  // 爱心扩散速度，越小速度越慢
-                effect: -0.75, // 爱心收缩效果，比如：1扩散，-2收缩
-                size: 32, // 爱心数量
-            },
-        };
-        (function () { var b = 0; var c = ["ms", "moz", "webkit", "o"]; for (var a = 0; a < c.length && !window.requestAnimationFrame; ++a) { window.requestAnimationFrame = window[c[a] + "RequestAnimationFrame"]; window.cancelAnimationFrame = window[c[a] + "CancelAnimationFrame"] || window[c[a] + "CancelRequestAnimationFrame"] } if (!window.requestAnimationFrame) { window.requestAnimationFrame = function (h, e) { var d = new Date().getTime(); var f = Math.max(0, 16 - (d - b)); var g = window.setTimeout(function () { h(d + f) }, f); b = d + f; return g } } if (!window.cancelAnimationFrame) { window.cancelAnimationFrame = function (d) { clearTimeout(d) } } }());
+<header>
+<h1>guitou的博客</h1>
+<nav>
+<ul>
+<li><a href="#">首页</a></li>
+<li><a href="#blog">文章</a></li>
+<li><a href="#about">关于</a></li>
+</ul>
+</nav>
+</header>
+<main>
+<section class="hero">
+<img src="guitou.jpg" alt="guitou" width="200px" height="200px">
+<h1>guitou</h1>
+<p>情商达人 | 聊天高手 | 恋爱顾问</p>
+</section>
 
-        var Point = (function () {
-            function Point(x, y) {
-                this.x = (typeof x !== 'undefined') ? x : 0;
-                this.y = (typeof y !== 'undefined') ? y : 0;
-            }
-            Point.prototype.clone = function () {
-                return new Point(this.x, this.y);
-            };
-            Point.prototype.length = function (length) {
-                if (typeof length == 'undefined')
-                    return Math.sqrt(this.x * this.x + this.y * this.y);
-                this.normalize();
-                this.x *= length;
-                this.y *= length;
-                return this;
-            };
-            Point.prototype.normalize = function () {
-                var length = this.length();
-                this.x /= length;
-                this.y /= length;
-                return this;
-            };
-            return Point;
-        })();
-        var Particle = (function () {
-            function Particle() {
-                this.position = new Point();
-                this.velocity = new Point();
-                this.acceleration = new Point();
-                this.age = 0;
-            }
-            Particle.prototype.initialize = function (x, y, dx, dy) {
-                this.position.x = x;
-                this.position.y = y;
-                this.velocity.x = dx;
-                this.velocity.y = dy;
-                this.acceleration.x = dx * settings.particles.effect;
-                this.acceleration.y = dy * settings.particles.effect;
-                this.age = 0;
-            };
-            Particle.prototype.update = function (deltaTime) {
-                this.position.x += this.velocity.x * deltaTime;
-                this.position.y += this.velocity.y * deltaTime;
-                this.velocity.x += this.acceleration.x * deltaTime;
-                this.velocity.y += this.acceleration.y * deltaTime;
-                this.age += deltaTime;
-            };
-            Particle.prototype.draw = function (context, image) {
-                function ease(t) {
-                    return (--t) * t * t + 1;
-                }
-                var size = image.width * ease(this.age / settings.particles.duration);
-                context.globalAlpha = 1 - this.age / settings.particles.duration;
-                context.drawImage(image, this.position.x - size / 2, this.position.y - size / 2, size, size);
-            };
-            return Particle;
-        })();
-        var ParticlePool = (function () {
-            var particles,
-                firstActive = 0,
-                firstFree = 0,
-                duration = settings.particles.duration;
-            function ParticlePool(length) {
-                // create and populate particle pool
-                particles = new Array(length);
-                for (var i = 0; i < particles.length; i++)
-                    particles[i] = new Particle();
-            }
-            ParticlePool.prototype.add = function (x, y, dx, dy) {
-                particles[firstFree].initialize(x, y, dx, dy);
-                // handle circular queue
-                firstFree++;
-                if (firstFree == particles.length) firstFree = 0;
-                if (firstActive == firstFree) firstActive++;
-                if (firstActive == particles.length) firstActive = 0;
-            };
-            ParticlePool.prototype.update = function (deltaTime) {
-                var i;
-                // update active particles
-                if (firstActive < firstFree) {
-                    for (i = firstActive; i < firstFree; i++)
-                        particles[i].update(deltaTime);
-                }
-                if (firstFree < firstActive) {
-                    for (i = firstActive; i < particles.length; i++)
-                        particles[i].update(deltaTime);
-                    for (i = 0; i < firstFree; i++)
-                        particles[i].update(deltaTime);
-                }
-                // remove inactive particles
-                while (particles[firstActive].age >= duration && firstActive != firstFree) {
-                    firstActive++;
-                    if (firstActive == particles.length) firstActive = 0;
-                }
-            };
-            ParticlePool.prototype.draw = function (context, image) {
-                // draw active particles
-                if (firstActive < firstFree) {
-                    for (i = firstActive; i < firstFree; i++)
-                        particles[i].draw(context, image);
-                }
-                if (firstFree < firstActive) {
-                    for (i = firstActive; i < particles.length; i++)
-                        particles[i].draw(context, image);
-                    for (i = 0; i < firstFree; i++)
-                        particles[i].draw(context, image);
-                }
-            };
-            return ParticlePool;
-        })();
-        (function (canvas) {
-            var context = canvas.getContext('2d'),
-                particles = new ParticlePool(settings.particles.length),
-                particleRate = settings.particles.length / settings.particles.duration, // particles/sec
-                time;
-            // get point on heart with -PI <= t <= PI
-            function pointOnHeart(t) {
-                return new Point(
-                    160 * Math.pow(Math.sin(t), 3),
-                    130 * Math.cos(t) - 50 * Math.cos(2 * t) - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t) + 25
-                );
-            }
-            // creating the particle image using a dummy canvas
-            var image = (function () {
-                var canvas = document.createElement('canvas'),
-                    context = canvas.getContext('2d');
-                canvas.width = settings.particles.size;
-                canvas.height = settings.particles.size;
-                // helper function to create the path
-                function to(t) {
-                    var point = pointOnHeart(t);
-                    point.x = settings.particles.size / 2 + point.x * settings.particles.size / 350;
-                    point.y = settings.particles.size / 2 - point.y * settings.particles.size / 350;
-                    return point;
-                }
-                // create the path
-                context.beginPath();
-                var t = -Math.PI;
-                var point = to(t);
-                context.moveTo(point.x, point.y);
-                while (t < Math.PI) {
-                    t += 0.01; // baby steps!
-                    point = to(t);
-                    context.lineTo(point.x, point.y);
-                }
-                context.closePath();
-                // create the fill
-                context.fillStyle = '#ea80b0';
-                context.fill();
-                // create the image
-                var image = new Image();
-                image.src = canvas.toDataURL();
-                return image;
-            })();
-            // render that thing!
-            function render() {
-                // next animation frame
-                requestAnimationFrame(render);
-                // update time
-                var newTime = new Date().getTime() / 1000,
-                    deltaTime = newTime - (time || newTime);
-                time = newTime;
-                // clear canvas
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                // create new particles
-                var amount = particleRate * deltaTime;
-                for (var i = 0; i < amount; i++) {
-                    var pos = pointOnHeart(Math.PI - 2 * Math.PI * Math.random());
-                    var dir = pos.clone().length(settings.particles.velocity);
-                    particles.add(canvas.width / 2 + pos.x, canvas.height / 2 - pos.y, dir.x, -dir.y);
-                }
-                // update and draw particles
-                particles.update(deltaTime);
-                particles.draw(context, image);
-            }
-            // handle (re-)sizing of the canvas
-            function onResize() {
-                canvas.width = canvas.clientWidth;
-                canvas.height = canvas.clientHeight;
-            }
-            window.onresize = onResize;
-            // delay rendering bootstrap
-            setTimeout(function () {
-                onResize();
-                render();
-            }, 10);
-        })(document.getElementById('pinkboard'));
-        </script>
+<section id="blog">
+  <h2>最新文章</h2>
+  <ul>
+    <li><a href="how-to-start-a-conversation-with-a-girl.html">如何与女生开启聊天</a></li>
+    <li><a href="how-to-keep-a-conversation-going-with-a-girl.html">如何与女生保持聊天</a></li>
+    <li><a href="how-to-flirt-with-a-girl-over-text.html">如何通过短信与女生调情</a></li>
+    <li><a href="how-to-ask-a-girl-out-on-a-date.html">如何约女生出去约会</a></li>
+    <li><a href="how-to-build-rapport-with-a-girl.html">如何与女生建立融洽关系</a></li>
+    <li><a href="how-to-make-a-girl-laugh.html">如何逗女生笑</a></li>
+  </ul>
+</section>
+
+<section id="about">
+  <h1>关于guitou的博客</h1>
+  <p>欢迎来到guitou的博客！这是一个分享我的想法、经验和对如何与女生聊天和建立融洽关系的见解的地方。</p>
+
+  <h2>关于guitou</h2>
+  <p>guitou，是一个情商很高的人，很会和女生聊天。我热衷于学习新事物、解决问题和与他人分享知识。</p>
+
+  <p>在这个博客中，你将找到有关以下主题的文章：</p>
+  <ul>
+    <li>如何与女生聊天</li>
+    <li>如何建立融洽关系</li>
+    <li>如何约会</li>
+    <li>如何与女生调情</li>
+    <li>如何让女生对你产生好感</li>
+  </ul>
+
+  <p>我希望通过我的文章能激发你的思考、为你提供新的视角，并帮助你在与女生相处方面取得进步。</p>
+
+  <p>如果你有任何问题或想了解更多信息，请随时通过电子邮件 <code><a href="mailto:guitou@sm.com">guitou@他'爸爸.com</a></code> 联系我。</p>
+
+  <h2>使命宣言</h2>
+  <p>guitou的博客的使命是通过分享知识、见解和灵感来帮助人们学习、成长和进步。我希望这个博客能成为一个有价值的资源，帮助你实现你的目标和梦想。</p>
+
+  <h2>价值观</h2>
+  <p>guitou的博客基于以下价值观：</p>
+  <ul>
+    <li>犀利：不断学习和成长。</li>
+    <li>精进：对分享知识和帮助他人充满热情。</li>
+    <li>尊重：尊重所有人的观点和经历。</li>
+    <li>诚信：诚实和可靠。</li>
+    <li>协作：与他人合作以实现共同目标。</li>
+  </ul>
+
+  <p>我希望这些价值观体现在博客的每一篇文章中。</p>
+</section>
+</main>
+<aside>
+<h2>联系方式</h2>
+<ul>
+<li><a href="mailto:guitou@sm.com">电子邮件</a></li>
+<li><a href="119或120或110">电话号码</a></li>
+</ul>
+</aside>
+<footer>
+<p>Copyright © 2023 guitou</p>
+</footer>
 </body>
-
 </html>
