@@ -1,0 +1,61 @@
+/* 全局样式 */
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+p {
+  margin-bottom: 10px;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* 特定元素样式 */
+
+#main-content {
+  width: 80%;
+  margin: 0 auto;
+}
+
+#blog-posts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.blog-post {
+  width: 30%;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.blog-post-title {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.blog-post-content {
+  font-size: 14px;
+}
